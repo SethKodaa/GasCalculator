@@ -1,5 +1,5 @@
 import streamlit as st
-from datetime import datetime
+from datetime import datetime, date, time
 
 # Constants
 HEATING_VALUE = 38.6
@@ -8,24 +8,29 @@ DEFAULT_COST = 0.03784
 
 st.title("Gas Usage Calculator")
 
-# Session state for saved reading
+# Initialize session state
 if "first_reading" not in st.session_state:
     st.session_state.first_reading = None
-if "first_time" not in st.session_state:
-    st.session_state.first_time = None
+if "first_timestamp" not in st.session_state:
+    st.session_state.first_timestamp = None
 
-# Save a first reading with timestamp
+# --- Set First Reading with Manual Date & Time ---
 st.subheader("Set First Reading")
+
 first = st.number_input("Enter Initial Meter Reading (m³)", value=0.0, key="first_input")
+first_date = st.date_input("Select Date of First Reading", value=date.today())
+first_time = st.time_input("Select Time of First Reading", value=datetime.now().time())
 
 if st.button("Save First Reading"):
+    dt_str = datetime.combine(first_date, first_time).strftime("%Y-%m-%d %H:%M:%S")
     st.session_state.first_reading = first
-    st.session_state.first_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    st.success(f"Initial reading saved: {first} m³ at {st.session_state.first_time}")
+    st.session_state.first_timestamp = dt_str
+    st.success(f"Saved: {first} m³ at {dt_str}")
 
-# Show stored reading
+# --- Use the stored first reading ---
 if st.session_state.first_reading is not None:
-    st.info(f"Saved first reading: {st.session_state.first_reading} m³ on {st.session_state.first_time}")
+    st.info(f"First reading: {st.session_state.first_reading} m³ on {st.session_state.first_timestamp}")
+
     current = st.number_input("Enter Current Meter Reading (m³)", value=0.0)
     cost_per_mj = st.number_input("Cost per MJ ($)", value=DEFAULT_COST)
 
