@@ -13,17 +13,23 @@ if "first_reading" not in st.session_state:
     st.session_state.first_reading = None
 if "first_timestamp" not in st.session_state:
     st.session_state.first_timestamp = None
+if "first_date" not in st.session_state:
+    st.session_state.first_date = date.today()
+if "first_time" not in st.session_state:
+    st.session_state.first_time = datetime.now().time()
 
 # --- Set First Reading with Manual Date & Time ---
 st.subheader("Set First Reading")
 
 first = st.number_input("Enter Initial Meter Reading (m³)", value=0.0, key="first_input")
-first_date = st.date_input("Select Date of First Reading", value=date.today())
-first_time = st.time_input("Select Time of First Reading", value=datetime.now().time())
+first_date = st.date_input("Select Date of First Reading", value=st.session_state.first_date)
+first_time = st.time_input("Select Time of First Reading", value=st.session_state.first_time)
 
 if st.button("Save First Reading"):
-    dt_str = datetime.combine(first_date, first_time).strftime("%Y-%m-%d %H:%M:%S")
     st.session_state.first_reading = first
+    st.session_state.first_date = first_date
+    st.session_state.first_time = first_time
+    dt_str = datetime.combine(first_date, first_time).strftime("%Y-%m-%d %H:%M:%S")
     st.session_state.first_timestamp = dt_str
     st.success(f"Saved: {first} m³ at {dt_str}")
 
